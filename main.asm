@@ -157,7 +157,6 @@ callBoard PROC								; printEmptyRed  printEmptyWhite
 
 
 	oddRow:
-		push eax
 		mov currentColumn,eax
 		xor edx,edx
 		mov ebx,2
@@ -177,7 +176,6 @@ callBoard PROC								; printEmptyRed  printEmptyWhite
 
 
 	evenRow:
-		push eax
 		mov currentColumn,eax
 		xor edx,edx
 		mov ebx,2
