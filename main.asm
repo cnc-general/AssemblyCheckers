@@ -32,11 +32,17 @@ requestedSquare DWORD ?
 rows DWORD 64 DUP (0Fh)
 
 .code
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of main
+
 main PROC
-	call init
+	;call init
 	call plot
 	exit
 main ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of main
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of init subroutine
 
 init PROC
 	mov outerLoopAction, OFFSET innerLoop
@@ -44,6 +50,9 @@ init PROC
 	call outerLoop
 	ret
 init ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of init subroutine
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of fillPieces subroutine
 
 fillPieces PROC
 	push eax
@@ -62,6 +71,9 @@ fillPieces PROC
 	ret
 fillPieces ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of fillPieces subroutine
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of plot subroutine
+
 plot PROC
 	push edx
 	push eax
@@ -77,6 +89,9 @@ plot PROC
 	ret
 plot ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of plot subroutine
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of outerLoop
+
 outerLoop PROC
 	push ecx
 	mov ecx, 0
@@ -90,6 +105,9 @@ outerLoop PROC
 	pop ecx
 	ret
 outerLoop ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 innerLoop PROC
 	mov currentRow,ecx
@@ -123,6 +141,9 @@ innerLoop PROC
 	ret
 innerLoop ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 getSquare PROC
 	push eax
 	push ebx
@@ -144,6 +165,9 @@ getSquare PROC
 	ret
 getSquare ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 printEmptyWhite PROC
 	push eax
 	push edx
@@ -161,6 +185,9 @@ printEmptyWhite PROC
 	pop eax
 	ret
 printEmptyWhite ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 printEmptyRed PROC
 	push eax
@@ -180,6 +207,9 @@ printEmptyRed PROC
 	ret
 printEmptyRed ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 printRedPiece PROC
 	push eax
 	push edx
@@ -197,6 +227,9 @@ printRedPiece PROC
 	pop eax
 	ret
 printRedPiece ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 printBlackPiece PROC
 	push eax
@@ -216,6 +249,9 @@ printBlackPiece PROC
 	ret
 printBlackPiece ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 printNewLine PROC
 	push eax
 	push edx
@@ -230,5 +266,7 @@ printNewLine PROC
 	pop eax
 	ret
 printNewLine ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 END main
