@@ -124,7 +124,7 @@ innerLoop PROC
 
 		call innerLoopAction			
 		
-		;call getSquare
+
 
 		;mov eax, [requestedSquare]
 		;mov eax, [eax]
@@ -144,7 +144,9 @@ innerLoop ENDP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 callBoard PROC								; printEmptyRed  printEmptyWhite
-	push eax					
+	push eax
+	push ecx
+					
 	mov	 currentRow,eax
 	xor edx,edx
 	mov ebx,2
@@ -155,9 +157,25 @@ callBoard PROC								; printEmptyRed  printEmptyWhite
 
 	jmp evenRow
 
+	evenRow:
+		mov eax,currentColumn
+		xor edx,edx
+		mov ebx,2
+		div ebx
+
+		cmp edx,1
+		je eroc
+		jmp erec
+
+	eroc:
+		call printEmptyRed
+		jmp endBoard
+	erec:
+		call ActiveSquare		;Call checksquare to check if there is something there
+		jmp endBoard
 
 	oddRow:
-		mov currentColumn,eax
+		mov eax,currentColumn
 		xor edx,edx
 		mov ebx,2
 		div ebx
@@ -171,29 +189,12 @@ callBoard PROC								; printEmptyRed  printEmptyWhite
 		call printEmptyRed
 		jmp endBoard
 	oroc:
-		call printEmptyWhite
-		jmp endBoard
-
-
-	evenRow:
-		mov currentColumn,eax
-		xor edx,edx
-		mov ebx,2
-		div ebx
-
-		cmp edx,1
-		je erec
-		jmp eroc
-
-	eroc:
-		call printEmptyWhite
-		jmp endBoard
-	erec:
-		call printEmptyRed
+		call ActiveSquare		;Call checksquare to check if there is something there
 		jmp endBoard
 
 
 	endBoard:
+		pop ecx
 		pop eax
 		ret
 callBoard ENDP
@@ -220,6 +221,40 @@ getSquare PROC
 
 	ret
 getSquare ENDP
+
+ActiveSquare PROC
+	push eax
+	push ecx
+
+	mov eax, currentRow
+	mov ecx, currentColumn
+
+	mov requestedRow, eax
+	mov requestedColumn, ecx
+	call getSquare
+	
+	mov eax, requestedSquare
+	cmp eax,0
+	je emptyActiveSquare
+
+	jmp checkPiece
+
+	emptyActiveSquare:
+		call printEmptyWhite
+		jmp endActiveSquare
+
+	checkPiece:
+		jmp endActiveSquare
+
+
+	endActiveSquare:
+		pop ecx
+		pop eax
+		ret
+ActiveSquare ENDP
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
