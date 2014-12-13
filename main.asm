@@ -29,7 +29,7 @@ requestedRow DWORD ?
 requestedColumn DWORD ?
 requestedSquare DWORD ?
 
-rows DWORD 64 DUP (0Fh)
+rows DWORD 64 DUP (0)
 
 .code
 
@@ -125,10 +125,6 @@ innerLoop PROC
 		call innerLoopAction			
 		
 
-
-		;mov eax, [requestedSquare]
-		;mov eax, [eax]
-
 		inc ecx
 		cmp ecx, 8
 	jnge loop_start
@@ -171,7 +167,7 @@ callBoard PROC								; printEmptyRed  printEmptyWhite
 		call printEmptyRed
 		jmp endBoard
 	erec:
-		call ActiveSquare		;Call checksquare to check if there is something there
+		call ActiveSquare		;Call activesquare to check if there is something there
 		jmp endBoard
 
 	oddRow:
@@ -189,7 +185,7 @@ callBoard PROC								; printEmptyRed  printEmptyWhite
 		call printEmptyRed
 		jmp endBoard
 	oroc:
-		call ActiveSquare		;Call checksquare to check if there is something there
+		call ActiveSquare		;Call activesquare to check if there is something there
 		jmp endBoard
 
 
@@ -233,7 +229,8 @@ ActiveSquare PROC
 	mov requestedColumn, ecx
 	call getSquare
 	
-	mov eax, requestedSquare
+	mov eax, [requestedSquare]
+	mov eax, [eax]
 	cmp eax,0
 	je emptyActiveSquare
 
@@ -244,6 +241,7 @@ ActiveSquare PROC
 		jmp endActiveSquare
 
 	checkPiece:
+		
 		jmp endActiveSquare
 
 
