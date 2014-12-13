@@ -38,11 +38,14 @@ requestedRow DWORD ?
 requestedColumn DWORD ?
 requestedSquare DWORD ?
 
-rows DWORD 64 DUP (0Fh)
+rows DWORD 64 DUP (0)
 
 initPieceCount DWORD 0
 
 .code
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of main
+
 main PROC
 	;call init
 	;call plot
@@ -120,8 +123,8 @@ PieceInit proc
 
 	evenRow:
 		mov eax, [currentcolumn]
-		mov ebx, 2
-		div ebx
+	mov ebx, 2
+	div ebx
 		cmp edx, 0
 		je evenRowEvenColumn
 		jmp endPiece
@@ -131,9 +134,9 @@ PieceInit proc
 		jmp endPiece
 
 	endPiece:
-		pop edx
-		pop ebx
-		pop eax
+	pop edx
+	pop ebx
+	pop eax
 
 		ret
 PieceInit endp
@@ -183,12 +186,15 @@ init PROC
 	ret
 init ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of fillPieces subroutine
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of plot subroutine
+
 plot PROC
 	push edx
 	push eax
 
 	mov outerLoopAction, OFFSET innerLoop
-	mov innerLoopAction, OFFSET printRedPiece
+	mov innerLoopAction, OFFSET	callBoard						;change:printRedPiece
 
 	call outerLoop
 
@@ -197,6 +203,9 @@ plot PROC
 
 	ret
 plot ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of plot subroutine
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of outerLoop
 
 outerLoop PROC
 	push ecx
@@ -211,6 +220,9 @@ outerLoop PROC
 	pop ecx
 	ret
 outerLoop ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 innerLoop PROC
 	mov currentRow,ecx
@@ -227,10 +239,6 @@ innerLoop PROC
 
 		call innerLoopAction
 		
-		;call getSquare
-
-		;mov eax, [requestedSquare]
-		;mov eax, [eax]
 
 		inc ecx
 		cmp ecx, 8
@@ -243,6 +251,66 @@ innerLoop PROC
 	
 	ret
 innerLoop ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+callBoard PROC								; printEmptyRed  printEmptyWhite
+	push eax
+	push ecx
+					
+	mov	 currentRow,eax
+	xor edx,edx
+	mov ebx,2
+	div ebx
+
+	cmp edx,1
+	je oddRow
+
+	jmp evenRow
+
+	evenRow:
+		mov eax,currentColumn
+		xor edx,edx
+		mov ebx,2
+		div ebx
+
+		cmp edx,1
+		je eroc
+		jmp erec
+
+	eroc:
+		call printEmptyRed
+		jmp endBoard
+	erec:
+		call ActiveSquare		;Call activesquare to check if there is something there
+		jmp endBoard
+
+	oddRow:
+		mov eax,currentColumn
+		xor edx,edx
+		mov ebx,2
+		div ebx
+
+		cmp edx,1
+
+		je oroc
+		jmp orec
+
+	orec:
+		call printEmptyRed
+		jmp endBoard
+	oroc:
+		call ActiveSquare		;Call activesquare to check if there is something there
+		jmp endBoard
+
+
+	endBoard:
+		pop ecx
+		pop eax
+		ret
+callBoard ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 getSquare PROC
 	push eax
@@ -265,6 +333,45 @@ getSquare PROC
 	ret
 getSquare ENDP
 
+ActiveSquare PROC
+	push eax
+	push ecx
+
+	mov eax, currentRow
+	mov ecx, currentColumn
+
+	mov requestedRow, eax
+	mov requestedColumn, ecx
+	call getSquare
+	
+	mov eax, [requestedSquare]
+	mov eax, [eax]
+	cmp eax,0
+	je emptyActiveSquare
+
+	jmp checkPiece
+
+	emptyActiveSquare:
+		call printEmptyWhite
+		jmp endActiveSquare
+
+	checkPiece:
+		
+		jmp endActiveSquare
+
+
+	endActiveSquare:
+		pop ecx
+		pop eax
+		ret
+ActiveSquare ENDP
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 printEmptyWhite PROC
 	push eax
 	push edx
@@ -282,6 +389,9 @@ printEmptyWhite PROC
 	pop eax
 	ret
 printEmptyWhite ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 printEmptyRed PROC
 	push eax
@@ -301,6 +411,9 @@ printEmptyRed PROC
 	ret
 printEmptyRed ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 printRedPiece PROC
 	push eax
 	push edx
@@ -318,6 +431,9 @@ printRedPiece PROC
 	pop eax
 	ret
 printRedPiece ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 printBlackPiece PROC
 	push eax
@@ -337,6 +453,9 @@ printBlackPiece PROC
 	ret
 printBlackPiece ENDP
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 printNewLine PROC
 	push eax
 	push edx
@@ -351,5 +470,7 @@ printNewLine PROC
 	pop eax
 	ret
 printNewLine ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 END main
