@@ -1,3 +1,4 @@
+
 TITLE MASM Template						(main.asm)
 
 ; Description:
@@ -6,6 +7,14 @@ TITLE MASM Template						(main.asm)
 
 INCLUDE Irvine32.inc
 .data
+
+Userinput DWORD 0
+X1 DWORD 0
+Y1 DWORD 0
+X2 DWORD 0
+Y2 DWORD 0
+
+Pieces DWORD 48 DUP (0)
 
 defaultColor DWORD white+(black*16)
 
@@ -31,12 +40,141 @@ requestedSquare DWORD ?
 
 rows DWORD 64 DUP (0Fh)
 
+initPieceCount DWORD 0
+
 .code
 main PROC
-	call init
-	call plot
+	;call init
+	;call plot
+	call input
+	call PieceInit
 	exit
 main ENDP
+
+	input proc
+
+	push eax
+	push ebx
+	push edx
+
+
+
+	call readint
+
+	XOR edx, edx
+
+	mov Userinput,eax
+	mov ebx, 1000
+	div ebx
+	mov X1, eax
+	mov eax, edx
+
+	XOR edx, edx
+
+	mov ebx, 100
+	div ebx
+	mov Y1, eax
+	mov eax, edx 
+
+	XOR edx, edx
+
+	mov ebx, 10
+	div ebx
+	mov X2, eax
+	mov eax, edx
+
+	mov Y2, edx 
+
+	pop edx
+	pop ebx
+	pop eax
+
+	ret
+input endp
+
+PieceInit proc
+	push eax
+	push ebx
+	push edx
+
+	XOR edx, edx
+
+	mov eax, [currentRow]
+	mov ebx, 2
+	div ebx
+	cmp edx, 1
+	je oddRow
+	jmp evenRow
+
+	oddRow: 
+		mov eax, [currentcolumn]
+		mov ebx, 2
+		div ebx
+		cmp edx, 1
+		je oddRowOddColumn
+		jmp endPiece
+
+	oddRowOddColumn:
+		call AddPiece
+		jmp endPiece
+
+	evenRow:
+		mov eax, [currentcolumn]
+		mov ebx, 2
+		div ebx
+		cmp edx, 0
+		je evenRowEvenColumn
+		jmp endPiece
+
+	evenRowEvenColumn:
+		call AddPiece
+		jmp endPiece
+
+	endPiece:
+		pop edx
+		pop ebx
+		pop eax
+
+		ret
+PieceInit endp
+
+FillPieces PROC
+	push ecx
+	
+	pop ecx
+	ret
+FillPieces ENDP
+
+PiecesOuterLoop PROC
+	push ecx
+		mov ecx, 0
+
+		loop_start:
+		call PiecesInnerLoop
+	pop ecx
+	ret
+PiecesOuterLoop ENDP
+
+PiecesInnerLoop PROC
+	ret
+PiecesInnerLoop ENDP
+
+AddPiece PROC
+	push eax
+
+	mov eax,[currentRow]
+	mov requestedRow, eax
+
+	mov eax, [currentColumn]
+	mov requestedColumn, eax
+
+	call getSquare
+	
+
+
+	pop eax
+	ret
+AddPiece ENDP
 
 init PROC
 	mov outerLoopAction, OFFSET innerLoop
@@ -44,23 +182,6 @@ init PROC
 	call outerLoop
 	ret
 init ENDP
-
-fillPieces PROC
-	push eax
-	push ebx
-	push edx
-
-	mov eax, [currentRow]
-	mov requestedRow, eax
-	mov ebx, 2
-	div ebx
-	cmp eax, 1
-
-	pop edx
-	pop ebx
-	pop eax
-	ret
-fillPieces ENDP
 
 plot PROC
 	push edx
