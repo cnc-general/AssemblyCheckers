@@ -79,7 +79,7 @@ plot PROC
 	push eax
 
 	mov outerLoopAction, OFFSET innerLoop
-	mov innerLoopAction, OFFSET printRedPiece
+	mov innerLoopAction, OFFSET	callBoard						;change:printRedPiece
 
 	call outerLoop
 
@@ -122,7 +122,7 @@ innerLoop PROC
 		mov requestedRow, eax
 		mov requestedColumn, ecx
 
-		call innerLoopAction
+		call innerLoopAction			
 		
 		;call getSquare
 
@@ -142,6 +142,64 @@ innerLoop PROC
 innerLoop ENDP
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+callBoard PROC								; printEmptyRed  printEmptyWhite
+	push eax					
+	mov	 currentRow,eax
+	xor edx,edx
+	mov ebx,2
+	div ebx
+
+	cmp edx,1
+	je oddRow
+
+	jmp evenRow
+
+
+	oddRow:
+		push eax
+		mov currentColumn,eax
+		xor edx,edx
+		mov ebx,2
+		div ebx
+
+		cmp edx,1
+
+		je oroc
+		jmp orec
+
+	orec:
+		call printEmptyRed
+		jmp endBoard
+	oroc:
+		call printEmptyWhite
+		jmp endBoard
+
+
+	evenRow:
+		push eax
+		mov currentColumn,eax
+		xor edx,edx
+		mov ebx,2
+		div ebx
+
+		cmp edx,1
+		je erec
+		jmp eroc
+
+	eroc:
+		call printEmptyWhite
+		jmp endBoard
+	erec:
+		call printEmptyRed
+		jmp endBoard
+
+
+	endBoard:
+		pop eax
+		ret
+callBoard ENDP
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 getSquare PROC
