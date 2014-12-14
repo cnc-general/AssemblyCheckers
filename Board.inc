@@ -8,6 +8,9 @@ Board_Replot PROC
 
 	lea edx, columnHeader
 	call WriteString
+
+	call Output_PrintPieceCounts
+
 	call Output_PrintNewLine
 
 	mov outerLoopAction, OFFSET Board_ReplotBoardOuterAction

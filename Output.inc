@@ -162,3 +162,30 @@ Output_PrintTurnString PROC
 		pop eax
 		ret
 Output_PrintTurnString ENDP
+
+Output_PrintPieceCounts PROC
+
+call Pieces_GetPieceCounts
+	push eax
+	push edx
+
+	mov eax, redPlayerColor
+	call SetTextColor
+	lea edx, redCountString
+	call WriteString
+	mov eax, RedPieceCount
+	call WriteDec
+	
+	mov eax, greenPlayerColor
+	call SetTextColor
+	lea edx, greenCountString
+	call WriteString
+	mov eax, GreenPieceCount
+	call WriteDec
+
+	mov eax, defaultColor
+	call SetTextColor
+
+	pop edx
+	pop eax
+Output_PrintPieceCounts ENDP

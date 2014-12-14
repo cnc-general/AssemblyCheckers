@@ -7,6 +7,9 @@ rowHeader BYTE " ",0
 inputString BYTE 0dh, 0ah, "Please Enter Command as 4 digit number...", 0dh, 0ah, "Enter using format: SrcRow_SrcCol_DstRow_DstCol", 0dh,0ah, "Example: 0123", 0dh,0ah, "Command: ",0
 errorString BYTE 0dh, 0ah, "That is an invalid move. ",0
 
+redCountString BYTE 09h, "Red: ",0
+greenCountString BYTE 09h, "Green: ",0
+
 greenPlayerString BYTE 0dh, 0ah, "Green Player's Turn!",0dh, 0ah,0dh, 0ah,0
 redPlayerString BYTE 0dh, 0ah, "Red Player's Turn!",0dh, 0ah,0dh, 0ah,0
 
@@ -55,5 +58,9 @@ RedPieceCount DWORD 0
 GreenPieceCount DWORD 0
 
 InputErrorOccured DWORD 0
+
+JumpInitiated DWORD 0
 MoveIsJump DWORD 0
+JumpIsAvailable DWORD 0
+
 CurrentPlayerID DWORD 0
