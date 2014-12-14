@@ -1,5 +1,10 @@
 .code
 Rules_PerformCommand PROC
+
+	mov JumpInitiated, 0
+	mov MoveIsJump, 0
+	mov	JumpIsAvailable, 0
+
 	call Rules_CheckDiagonal
 	mov eax, InputErrorOccured
 	cmp eax, 1
@@ -44,7 +49,7 @@ Rules_PerformCommand PROC
 		call Rules_CheckValidJump
 	
 	after_check:
-		call Rules_CheckJumpAvailable
+		call Rules_CheckPlayerJumpAvailable
 
 		call Rules_RequiredJumpOccured
 		mov eax, InputErrorOccured
@@ -62,8 +67,6 @@ Rules_PerformCommand PROC
 		call Rules_RemoveJump
 
 	end_perform:
-		
-
 		ret
 Rules_PerformCommand ENDP
 
@@ -123,15 +126,35 @@ Rules_KingPiece PROC
 	ret
 Rules_KingPiece ENDP
 
-
-
 Rules_SwapPlayers PROC
 	push eax
+
+	mov eax, R2
+	mov R1, eax
+
+	mov eax, C2
+	mov C1, eax
+
+	mov eax, MoveIsJump
+	cmp eax, 0
+		je perform_swap
+
+	call Rules_CheckJumpAvailable
+
+	mov eax, JumpIsAvailable
+	cmp eax, 1
+		je end_swap
+
+	perform_swap:
 		mov eax, CurrentPlayerID
 		XOR eax, 000000001h
 		mov CurrentPlayerID, eax
-	pop eax
-	ret
+
+	end_swap:
+
+		mov JumpIsAvailable, 0
+		pop eax
+		ret
 Rules_SwapPlayers ENDP
 
 Rules_CheckIfError PROC
@@ -406,13 +429,79 @@ Rules_CheckDestination PROC
 		ret
 Rules_CheckDestination ENDP
 
-Rules_CheckJumpAvailable PROC
+Rules_CheckPlayerJumpAvailable PROC
 	push eax
 	push ebx
 	push ecx
 	push edx
 
-	mov JumpIsAvailable, 0
+	mov ecx, R1
+	mov edx, C1
+
+	mov outerLoopAction, OFFSET Helpers_InnerLoop
+	mov innerLoopAction, OFFSET	Rules_CheckSquareJumpAvailable
+	call Helpers_OuterLoop
+
+	end_check:
+
+		mov R1, ecx
+		mov C1, edx
+
+		pop edx
+		pop ecx
+		pop ebx
+		pop eax
+		ret
+Rules_CheckPlayerJumpAvailable ENDP
+
+Rules_CheckSquareJumpAvailable PROC
+	push eax
+	push ebx
+	push ecx
+	push edx
+
+	mov eax, currentRow
+	mov requestedRow, eax
+
+	mov ebx, currentColumn
+	mov requestedColumn, ebx
+
+	call Board_GetRequestedSquare
+
+	mov eax, [requestedSquare]
+	mov eax, [eax]
+	cmp eax, 0
+		je end_check
+
+	mov requestedPiece, eax
+	call Pieces_GetRequestedPiece
+	
+	mov eax, requestedPieceID
+	mov ebx, CurrentPlayerID
+	cmp eax, ebx
+	jne end_check
+
+	mov eax, currentRow
+	mov R1, eax
+
+	mov ebx, currentColumn
+	mov C1, ebx
+
+	call Rules_CheckJumpAvailable
+
+	end_check:
+		pop edx
+		pop ecx
+		pop ebx
+		pop eax
+		ret
+Rules_CheckSquareJumpAvailable ENDP
+
+Rules_CheckJumpAvailable PROC
+	push eax
+	push ebx
+	push ecx
+	push edx
 
 	mov eax, R1
 	mov ebx, C1

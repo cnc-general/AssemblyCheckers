@@ -168,6 +168,7 @@ Init_CreatePiece PROC
 	add eax, edx
 
 	mov dword ptr[eax], ebx
+		;mov dword ptr[eax], 0FFFFFFFFh
 	add eax, 4
 	mov dword ptr[eax], 01h
 

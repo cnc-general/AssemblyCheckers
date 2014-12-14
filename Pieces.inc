@@ -25,7 +25,7 @@ Pieces_GetPieceCounts PROC
 	mov RedPieceCount, 0
 	mov GreenPieceCount, 0
 
-	mov ecx, 24
+	mov ecx, 0
 
 	loop_start:
 		lea eax, Pieces
@@ -37,7 +37,9 @@ Pieces_GetPieceCounts PROC
 		call Pieces_GetRequestedPiece
 
 		call Pieces_TrackPieceCount
-	loop loop_start
+		inc ecx
+		cmp ecx, 24
+	jl loop_start
 
 	mov eax, RedPieceCount
 	mov ebx, GreenPieceCount
@@ -56,13 +58,13 @@ Pieces_TrackPieceCount PROC
 	mov ebx, requestedPieceStatus
 	
 	cmp ebx, 0
-	jg valid_piece
+		jg valid_piece
 
 	jmp end_piece
 
 	valid_piece:
 		cmp eax, 0
-		je red_piece
+			je red_piece
 		jmp Green_piece
 
 	red_piece:
