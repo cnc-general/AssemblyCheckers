@@ -16,15 +16,19 @@ Y2 DWORD 0
 
 Pieces DWORD 48 DUP (0)
 
+columnHeader BYTE " 01234567", 0
+rowHeader BYTE " ",0
+
 defaultColor DWORD white+(black*16)
 
 redSquareColor DWORD black+(red*16)
 whiteSquareColor DWORD black+(white*16)
 redPieceColor DWORD red+(white*16)
-blackPieceColor DWORD black+(white*16)
+greenPieceColor DWORD green+(white*16)
 
 emptySquare BYTE " ",0
 filledSquare BYTE "O",0
+kingSquare BYTE "K",0
 
 endl BYTE 0dh,0ah,0
 
@@ -38,9 +42,16 @@ requestedRow DWORD ?
 requestedColumn DWORD ?
 requestedSquare DWORD ?
 
+requestedPiece DWORD 0
+requestedPieceID DWORD 0
+requestedPieceStatus DWORD 0
+
 rows DWORD 64 DUP (0)
 
-initPieceCount DWORD 0
+CreatePieceCount DWORD 0
+
+RedPieceCount DWORD 0
+GreenPieceCount DWORD 0
 
 .code
 
@@ -48,19 +59,126 @@ initPieceCount DWORD 0
 
 main PROC
 	;call init
-	;call plot
-	call input
-	call PieceInit
+	;call input
+
+	call CreatePieces
+	call InitBoard
+
+	call ReplotBoard
+
+	;call GetPieceCounts
 	exit
 main ENDP
 
-	input proc
+InitBoard PROC
+	mov innerLoopAction, OFFSET PlacePiece
+	mov outerLoopAction, OFFSET innerLoop
+	
+	call outerLoop
 
+	mov CreatePieceCount, 0
+
+	ret
+InitBoard ENDP
+
+
+PlacePiece proc
 	push eax
 	push ebx
 	push edx
 
+	XOR edx, edx
 
+	mov eax, [currentRow]
+	mov ebx, 2
+	div ebx
+	cmp edx, 1
+	je oddRow
+	jmp evenRow
+
+	oddRow: 
+		mov eax, [currentcolumn]
+		mov ebx, 2
+		div ebx
+		cmp edx, 1
+		je oddRowOddColumn
+		jmp endPiece
+
+	oddRowOddColumn:
+		call AddPieceToBoard
+		jmp endPiece
+
+	evenRow:
+		mov eax, [currentcolumn]
+		mov ebx, 2
+		div ebx
+		cmp edx, 0
+		je evenRowEvenColumn
+		jmp endPiece
+
+	evenRowEvenColumn:
+		call AddPieceToBoard
+		jmp endPiece
+
+	endPiece:
+	pop edx
+	pop ebx
+	pop eax
+	ret
+PlacePiece ENDP
+
+AddPieceToBoard PROC
+	push eax
+	push ebx
+	push ecx
+	
+	mov eax, [currentRow]
+	mov requestedRow, eax
+
+	mov ebx, [currentColumn]
+	mov requestedColumn, ebx
+
+	call GetSquare
+
+	cmp eax, 2
+	jle piece
+
+	cmp eax, 5
+	jge piece
+
+	jmp end_add
+
+	piece:
+		mov ecx, CreatePieceCount
+		imul ecx, 8
+		
+		mov eax, [requestedSquare]
+		mov eax, [eax]
+
+		mov eax, [requestedSquare]
+		lea ebx, Pieces
+		add ebx, ecx
+
+		mov DWORD PTR [eax], ebx
+
+		mov eax, [requestedSquare]
+		mov eax, [eax]
+
+		mov eax, CreatePieceCount
+		inc eax
+		mov CreatePieceCount, eax
+
+	end_add:
+		pop ecx
+		pop ebx
+		pop eax
+		ret
+AddPieceToBoard ENDP
+
+input proc
+	push eax
+	push ebx
+	push edx
 
 	call readint
 
@@ -95,106 +213,168 @@ main ENDP
 	ret
 input endp
 
-PieceInit proc
-	push eax
-	push ebx
-	push edx
-
-	XOR edx, edx
-
-	mov eax, [currentRow]
-	mov ebx, 2
-	div ebx
-	cmp edx, 1
-	je oddRow
-	jmp evenRow
-
-	oddRow: 
-		mov eax, [currentcolumn]
-		mov ebx, 2
-		div ebx
-		cmp edx, 1
-		je oddRowOddColumn
-		jmp endPiece
-
-	oddRowOddColumn:
-		call AddPiece
-		jmp endPiece
-
-	evenRow:
-		mov eax, [currentcolumn]
-	mov ebx, 2
-	div ebx
-		cmp edx, 0
-		je evenRowEvenColumn
-		jmp endPiece
-
-	evenRowEvenColumn:
-		call AddPiece
-		jmp endPiece
-
-	endPiece:
-	pop edx
-	pop ebx
-	pop eax
-
-		ret
-PieceInit endp
-
-FillPieces PROC
-	push ecx
-	
-	pop ecx
+CreatePieces PROC
+	call PiecesOuterLoop
 	ret
-FillPieces ENDP
+CreatePieces ENDP
 
 PiecesOuterLoop PROC
 	push ecx
-		mov ecx, 0
 
-		loop_start:
+	mov ecx, 0
+	loop_start: 
 		call PiecesInnerLoop
+		inc ecx
+		cmp ecx, 2
+		jl loop_start
 	pop ecx
 	ret
 PiecesOuterLoop ENDP
 
 PiecesInnerLoop PROC
+	push ecx
+	push ebx
+
+	mov ebx, ecx
+
+	mov ecx, 0
+	loop_start: 
+		call CreatePiece
+		inc ecx
+		cmp ecx, 12
+		jl loop_start
+	
+	pop ebx
+	pop ecx
 	ret
 PiecesInnerLoop ENDP
 
-AddPiece PROC
+CreatePiece PROC
 	push eax
-
-	mov eax,[currentRow]
-	mov requestedRow, eax
-
-	mov eax, [currentColumn]
-	mov requestedColumn, eax
-
-	call getSquare
+	push ebx
+	push ecx
+	push edx
 	
+	;ebx = player
+	;ecx = piece
 
+	mov eax, ebx
+	imul eax, 96
 
+	mov edx, ecx
+	imul edx, 8
+
+	add edx, eax
+	lea eax,Pieces
+	add eax, edx
+
+	mov dword ptr[eax], ebx
+	add eax, 4
+	mov dword ptr[eax], 01h
+
+	pop edx
+	pop ecx
+	pop ebx
 	pop eax
 	ret
-AddPiece ENDP
+CreatePiece ENDP
 
-init PROC
-	mov outerLoopAction, OFFSET innerLoop
-	mov innerLoopAction, OFFSET fillPieces
-	call outerLoop
+GetRequestedPiece PROC
+	push eax
+	push ebx
+
+	mov eax, requestedPiece
+
+	mov ebx, [eax]
+	mov requestedPieceID, ebx
+	add eax, 4
+
+	mov ebx, [eax]
+	mov requestedPieceStatus, ebx
+
+	pop ebx
+	pop eax
 	ret
-init ENDP
+GetRequestedPiece ENDP
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of fillPieces subroutine
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of plot subroutine
+GetPieceCounts PROC
+	push eax
+	push ebx
+	push ecx
 
-plot PROC
+	mov RedPieceCount, 0
+	mov GreenPieceCount, 0
+
+	mov ecx, 24
+
+	loop_start:
+		lea eax, Pieces
+		mov ebx, ecx
+		imul ebx, 8
+		add eax, ebx
+
+		mov requestedPiece, eax
+		call GetRequestedPiece
+
+		call TrackPieceCount
+	loop loop_start
+
+	mov eax, RedPieceCount
+	mov ebx, GreenPieceCount
+	
+	pop ecx
+	pop ebx
+	pop eax
+	ret
+GetPieceCounts ENDP
+
+TrackPieceCount PROC
+	push eax
+	push ebx
+
+	mov eax, requestedPieceID
+	mov ebx, requestedPieceStatus
+	
+	cmp ebx, 0
+	jg valid_piece
+
+	jmp end_piece
+
+	valid_piece:
+		cmp eax, 0
+		je red_piece
+		jmp Green_piece
+
+	red_piece:
+		mov eax, RedPieceCount
+		inc eax
+		mov RedPieceCount, eax
+		jmp end_piece
+
+	Green_piece:
+		mov eax, GreenPieceCount
+		inc eax
+		mov GreenPieceCount, eax
+		jmp end_piece
+
+	end_piece:
+		pop ebx
+		pop eax
+		ret
+TrackPieceCount ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of ReplotBoard subroutine
+
+ReplotBoard PROC
 	push edx
 	push eax
 
-	mov outerLoopAction, OFFSET innerLoop
-	mov innerLoopAction, OFFSET	callBoard						;change:printRedPiece
+	lea edx, columnHeader
+	call WriteString
+	call printNewLine
+
+	mov outerLoopAction, OFFSET ReplotBoardOuterAction
+	mov innerLoopAction, OFFSET	CreateSquare
 
 	call outerLoop
 
@@ -202,9 +382,21 @@ plot PROC
 	pop edx
 
 	ret
-plot ENDP
+ReplotBoard ENDP
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of plot subroutine
+ReplotBoardOuterAction PROC
+	push eax
+	mov eax, ecx
+	call WriteDec
+
+	call innerLoop
+	call printNewLine
+
+	pop eax
+	ret
+ReplotBoardOuterAction ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; End of ReplotBoard subroutine
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Start of outerLoop
 
 outerLoop PROC
@@ -212,6 +404,7 @@ outerLoop PROC
 	mov ecx, 0
 	
 	loop_start: 
+		mov currentRow,ecx
 		call outerLoopAction
 		inc ecx
 		cmp ecx, 8
@@ -225,27 +418,17 @@ outerLoop ENDP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 innerLoop PROC
-	mov currentRow,ecx
 	push ecx
 	push eax
 
 	mov ecx, 0
 	loop_start:
 		mov currentColumn, ecx
-		mov eax, currentRow
-
-		mov requestedRow, eax
-		mov requestedColumn, ecx
-
 		call innerLoopAction
-		
-
 		inc ecx
 		cmp ecx, 8
 	jnge loop_start
-
-	call printNewLine
-
+	
 	pop eax
 	pop ecx
 	
@@ -254,7 +437,7 @@ innerLoop ENDP
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-callBoard PROC								; printEmptyRed  printEmptyWhite
+CreateSquare PROC								; printEmptyRed  printEmptyWhite
 	push eax
 	push ecx
 					
@@ -308,11 +491,11 @@ callBoard PROC								; printEmptyRed  printEmptyWhite
 		pop ecx
 		pop eax
 		ret
-callBoard ENDP
+CreateSquare ENDP
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-getSquare PROC
+GetSquare PROC
 	push eax
 	push ebx
 
@@ -331,7 +514,7 @@ getSquare PROC
 	pop eax
 
 	ret
-getSquare ENDP
+GetSquare ENDP
 
 ActiveSquare PROC
 	push eax
@@ -342,7 +525,7 @@ ActiveSquare PROC
 
 	mov requestedRow, eax
 	mov requestedColumn, ecx
-	call getSquare
+	call GetSquare
 	
 	mov eax, [requestedSquare]
 	mov eax, [eax]
@@ -356,9 +539,41 @@ ActiveSquare PROC
 		jmp endActiveSquare
 
 	checkPiece:
-		
+		mov requestedPiece, eax
+		call GetRequestedPiece
+
+		mov eax, requestedPieceID
+		cmp eax, 0
+		je is_red
+		jmp is_green
+
+	is_red:
+		mov eax, requestedPieceStatus
+		cmp eax, 2
+		je red_king
+		jmp red_piece
+
+	red_piece:
+		call printRedPiece
 		jmp endActiveSquare
 
+	red_king:
+		call printRedKing
+		jmp endActiveSquare
+
+	is_green:
+		mov eax, requestedPieceStatus
+		cmp eax, 2
+		je green_piece
+		jmp green_piece
+
+	green_piece:
+		call printGreenPiece
+		jmp endActiveSquare
+
+	green_king:
+		call printGreenKing
+		jmp endActiveSquare
 
 	endActiveSquare:
 		pop ecx
@@ -377,7 +592,7 @@ printEmptyWhite PROC
 	push edx
 
 	mov eax, whiteSquareColor
-	mov edx, OFFSET emptySquare
+	lea edx, emptySquare
 
 	call SetTextColor
 	call WriteString
@@ -398,7 +613,7 @@ printEmptyRed PROC
 	push edx
 
 	mov eax, redSquareColor
-	mov edx, OFFSET emptySquare
+	lea edx, emptySquare
 
 	call SetTextColor
 	call WriteString
@@ -419,7 +634,7 @@ printRedPiece PROC
 	push edx
 
 	mov eax, redPieceColor
-	mov edx, OFFSET filledSquare
+	lea edx, filledSquare
 
 	call SetTextColor
 	call WriteString
@@ -432,15 +647,12 @@ printRedPiece PROC
 	ret
 printRedPiece ENDP
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-printBlackPiece PROC
+printRedKing PROC
 	push eax
 	push edx
 
-	mov eax, blackPieceColor
-	mov edx, OFFSET filledSquare
+	mov eax, redPieceColor
+	lea edx, kingSquare
 
 	call SetTextColor
 	call WriteString
@@ -451,7 +663,46 @@ printBlackPiece PROC
 	pop edx
 	pop eax
 	ret
-printBlackPiece ENDP
+printRedKing ENDP
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+printGreenPiece PROC
+	push eax
+	push edx
+
+	mov eax, greenPieceColor
+	lea edx, filledSquare
+
+	call SetTextColor
+	call WriteString
+
+	mov eax, defaultColor
+	call SetTextColor
+
+	pop edx
+	pop eax
+	ret
+printGreenPiece ENDP
+
+printGreenKing PROC
+	push eax
+	push edx
+
+	mov eax, greenPieceColor
+	lea edx, filledSquare
+
+	call SetTextColor
+	call WriteString
+
+	mov eax, defaultColor
+	call SetTextColor
+
+	pop edx
+	pop eax
+	ret
+printGreenKing ENDP
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -460,7 +711,7 @@ printNewLine PROC
 	push eax
 	push edx
 
-	mov edx, OFFSET endl
+	lea edx, endl
 	call WriteString
 
 	mov eax, defaultColor
