@@ -35,7 +35,7 @@ Board_ReplotBoardOuterAction PROC
 	ret
 Board_ReplotBoardOuterAction ENDP
 
-Board_CreateSquare PROC								; printEmptyRed  printEmptyWhite
+Board_CreateSquare PROC
 	push eax
 	push ecx
 					
@@ -127,7 +127,7 @@ Board_ActiveSquare PROC
 	mov eax, [requestedSquare]
 	mov eax, [eax]
 	cmp eax,0
-	je emptyActiveSquare
+		je emptyActiveSquare
 
 	jmp checkPiece
 

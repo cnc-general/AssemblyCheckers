@@ -186,8 +186,8 @@ Rules_CheckAdjacent PROC
 	cmp ebx, 1
 		jg error_occured
 
-	NEG eax
-	cmp eax, 1
+	NEG ebx
+	cmp ebx, 1
 		jg error_occured
 
 	jmp end_check
@@ -1071,27 +1071,24 @@ Rules_KingPiece PROC
 	push eax
 	push ebx
 
-		mov eax, R2
-		mov ebx, C2
+	mov eax, R1
+	mov ebx, C1
 
-		mov requestedRow, eax
-		mov requestedColumn, ebx
+	mov requestedRow, eax
+	mov requestedColumn, ebx
+	call Board_GetRequestedSquare
+	
+	mov eax, [requestedSquare]
+	mov ecx, DWORD PTR [eax]
 
-		mov eax, [requestedSquare]
-		;add eax, 4
-		mov eax, [eax]
+	mov ebx, [eax]
+	add ebx, 4
+	mov DWORD PTR [ebx], 2
 
-		mov requestedPiece, eax
-
-		call Pieces_GetRequestedPiece
-
-		mov eax, requestedPieceStatus
-
-		mov DWORD PTR [eax], 2
-
-	pop ebx
-	pop ebx
-	ret
+	end_king:
+		pop ebx
+		pop ebx
+		ret
 Rules_KingPiece ENDP
 
 Rules_SwapPlayers PROC
