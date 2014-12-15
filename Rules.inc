@@ -1071,15 +1071,22 @@ Rules_KingPiece PROC
 	push eax
 	push ebx
 
-		mov eax, R1
-		mov ebx, C1
+		mov eax, R2
+		mov ebx, C2
 
 		mov requestedRow, eax
 		mov requestedColumn, ebx
 
 		mov eax, [requestedSquare]
+		;add eax, 4
 		mov eax, [eax]
-		add eax, 4
+
+		mov requestedPiece, eax
+
+		call Pieces_GetRequestedPiece
+
+		mov eax, requestedPieceStatus
+
 		mov DWORD PTR [eax], 2
 
 	pop ebx
