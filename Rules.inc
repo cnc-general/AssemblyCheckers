@@ -5,6 +5,8 @@ Rules_PerformCommand PROC
 	mov MoveIsJump, 0
 	mov	JumpIsAvailable, 0
 
+	call Rules_VerifyInput
+
 	call Rules_CheckDiagonal
 	mov eax, InputErrorOccured
 	cmp eax, 1
@@ -58,104 +60,48 @@ Rules_PerformCommand PROC
 
 		call Rules_MovePiece
 
-		call Rules_CheckShouldKing
-
 		mov eax, MoveIsJump
 		cmp eax, 0
 			je end_perform
 
 		call Rules_RemoveJump
 
+		call Rules_CheckShouldKing
+
 	end_perform:
 		ret
 Rules_PerformCommand ENDP
 
-Rules_CheckShouldKing PROC
+Rules_VerifyInput PROC
 	push eax
-	push ebx
+
+	mov eax, R1
+	cmp eax, 7
+		jg error_occured
+
+	mov eax, C1
+	cmp eax, 7
+		jg error_occured
 
 	mov eax, R2
-	mov ebx, C2
-
-	mov R1, eax
-	mov C1, ebx
-
-	mov ebx, eax
-
-	mov eax, CurrentPlayerID
-	cmp eax, 0
-		je player_0
-	jmp player_1
-
-	player_0:
-		cmp ebx, 7
-			je king
-
-	player_1:
-		cmp ebx, 0
-			je king
-
-	jmp end_check
-
-	king:
-		call Rules_KingPiece
-
-	end_check:
-		pop ebx
-		pop ebx
-		ret
-Rules_CheckShouldKing ENDP
-
-Rules_KingPiece PROC
-	push eax
-	push ebx
-
-		mov eax, R1
-		mov ebx, C1
-
-		mov requestedRow, eax
-		mov requestedColumn, ebx
-
-		mov eax, [requestedSquare]
-		mov eax, [eax]
-		add eax, 4
-		mov DWORD PTR [eax], 2
-
-	pop ebx
-	pop ebx
-	ret
-Rules_KingPiece ENDP
-
-Rules_SwapPlayers PROC
-	push eax
-
-	mov eax, R2
-	mov R1, eax
+	cmp eax, 7
+		jg error_occured
 
 	mov eax, C2
-	mov C1, eax
+	cmp eax, 7
+		jg error_occured
 
-	mov eax, MoveIsJump
-	cmp eax, 0
-		je perform_swap
+	jmp end_verify
 
-	call Rules_CheckJumpAvailable
+	error_occured:
+		mov InputErrorOccured, 1
+		jmp end_verify
 
-	mov eax, JumpIsAvailable
-	cmp eax, 1
-		je end_swap
-
-	perform_swap:
-		mov eax, CurrentPlayerID
-		XOR eax, 000000001h
-		mov CurrentPlayerID, eax
-
-	end_swap:
-
-		mov JumpIsAvailable, 0
+	end_verify:
 		pop eax
 		ret
-Rules_SwapPlayers ENDP
+Rules_VerifyInput ENDP
+
 
 Rules_CheckIfError PROC
 	push eax
@@ -1011,12 +957,12 @@ Rules_RemoveJump PROC
 		call Board_GetRequestedSquare
 	
 		mov eax, [requestedSquare]
-		mov eax, [eax]
-		add eax, 4
-		mov DWORD PTR [eax], 0
-
-		mov eax, [requestedSquare]
 		mov ecx, DWORD PTR [eax]
+
+		mov ebx, [eax]
+		add ebx, 4
+		mov DWORD PTR [ebx], 0
+
 		mov DWORD PTR [eax], 0
 
 		jmp finish_check
@@ -1034,6 +980,11 @@ Rules_RemoveJump PROC
 	
 		mov eax, [requestedSquare]
 		mov ecx, DWORD PTR [eax]
+
+		mov ebx, [eax]
+		add ebx, 4
+		mov DWORD PTR [ebx], 0
+
 		mov DWORD PTR [eax], 0
 
 		jmp finish_check
@@ -1058,6 +1009,11 @@ Rules_RemoveJump PROC
 	
 		mov eax, [requestedSquare]
 		mov ecx, DWORD PTR [eax]
+
+		mov ebx, [eax]
+		add ebx, 4
+		mov DWORD PTR [ebx], 0
+
 		mov DWORD PTR [eax], 0
 
 		jmp finish_check
@@ -1075,6 +1031,11 @@ Rules_RemoveJump PROC
 	
 		mov eax, [requestedSquare]
 		mov ecx, DWORD PTR [eax]
+
+		mov ebx, [eax]
+		add ebx, 4
+		mov DWORD PTR [ebx], 0
+
 		mov DWORD PTR [eax], 0
 
 		jmp finish_check
@@ -1087,6 +1048,93 @@ Rules_RemoveJump PROC
 		ret
 
 Rules_RemoveJump ENDP
+
+Rules_CheckShouldKing PROC
+	push eax
+	push ebx
+
+	mov eax, R2
+	mov ebx, C2
+
+	mov R1, eax
+	mov C1, ebx
+
+	mov ebx, eax
+
+	mov eax, CurrentPlayerID
+	cmp eax, 0
+		je player_0
+	jmp player_1
+
+	player_0:
+		cmp ebx, 7
+			je king
+
+	player_1:
+		cmp ebx, 0
+			je king
+
+	jmp end_check
+
+	king:
+		call Rules_KingPiece
+
+	end_check:
+		pop ebx
+		pop ebx
+		ret
+Rules_CheckShouldKing ENDP
+
+Rules_KingPiece PROC
+	push eax
+	push ebx
+
+		mov eax, R1
+		mov ebx, C1
+
+		mov requestedRow, eax
+		mov requestedColumn, ebx
+
+		mov eax, [requestedSquare]
+		mov eax, [eax]
+		add eax, 4
+		mov DWORD PTR [eax], 2
+
+	pop ebx
+	pop ebx
+	ret
+Rules_KingPiece ENDP
+
+Rules_SwapPlayers PROC
+	push eax
+
+	mov eax, R2
+	mov R1, eax
+
+	mov eax, C2
+	mov C1, eax
+
+	mov eax, MoveIsJump
+	cmp eax, 0
+		je perform_swap
+
+	call Rules_CheckJumpAvailable
+
+	mov eax, JumpIsAvailable
+	cmp eax, 1
+		je end_swap
+
+	perform_swap:
+		mov eax, CurrentPlayerID
+		XOR eax, 000000001h
+		mov CurrentPlayerID, eax
+
+	end_swap:
+
+		mov JumpIsAvailable, 0
+		pop eax
+		ret
+Rules_SwapPlayers ENDP
 
 Rules_EndIfWon PROC
 	push eax
