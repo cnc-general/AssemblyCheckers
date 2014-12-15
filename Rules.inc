@@ -343,27 +343,9 @@ Rules_CheckDestination PROC
 	mov eax, [requestedSquare]
 	mov eax, [eax]
 	cmp eax, 0
-		je move_standard
+		jne error_occured
 
-	mov requestedPiece, eax
-	call Pieces_GetRequestedPiece
-	
-	mov eax, requestedPieceID
-	mov ebx, CurrentPlayerID
-	cmp eax, ebx
-		je error_occured
-	
-	jmp move_jump
-
-
-	move_jump:
-		mov MoveIsJump, 1
-		jmp end_check
-
-
-	move_standard:
-		mov MoveIsJump, 0
-		jmp end_check
+	jmp end_check
 
 	error_occured:
 		mov InputErrorOccured, 1
