@@ -1124,19 +1124,44 @@ Rules_SwapPlayers ENDP
 
 Rules_EndIfWon PROC
 	push eax
-
+	
 	call Pieces_GetPieceCounts
 	
 	mov eax, RedPieceCount
-	
 	cmp eax, 0
-	je end_program
+		je green_win
 
 	mov eax, GreenPieceCount
 	cmp eax, 0
-	je end_program
+		je red_win
 
 	jmp return_main
+
+	red_win:
+		Call ClrScr
+
+		mov eax, redPlayerColor
+		call SetTextColor
+		lea edx, RedWinString
+		call WriteString
+		pop edx
+
+		call WaitMsg
+
+		jmp end_program
+
+	green_win:
+		Call ClrScr
+
+		mov eax, greenPlayerColor
+		call SetTextColor
+		lea edx, GreenWinString
+		call WriteString
+		pop edx
+
+		call WaitMsg
+
+		jmp end_program
 	
 	end_program:
 		exit
