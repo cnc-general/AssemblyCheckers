@@ -1,4 +1,8 @@
 .code
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_PerformCommand subroutine
+
 Rules_PerformCommand PROC
 
 	mov JumpInitiated, 0
@@ -72,6 +76,11 @@ Rules_PerformCommand PROC
 		ret
 Rules_PerformCommand ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_PerformCommand subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_VerifyInput subroutine
+
 Rules_VerifyInput PROC
 	push eax
 
@@ -102,6 +111,10 @@ Rules_VerifyInput PROC
 		ret
 Rules_VerifyInput ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_VerifyInput subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckIfError subroutine
 
 Rules_CheckIfError PROC
 	push eax
@@ -130,6 +143,11 @@ Rules_CheckIfError PROC
 		pop eax
 		ret
 Rules_CheckIfError ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckIfError subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckDiagonal subroutine
 
 Rules_CheckDiagonal PROC
 	push eax
@@ -162,6 +180,11 @@ Rules_CheckDiagonal PROC
 		ret
 Rules_CheckDiagonal ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckDiagonal subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckAdjacent subroutine
+
 Rules_CheckAdjacent PROC
 	push eax
 	push ebx
@@ -186,8 +209,8 @@ Rules_CheckAdjacent PROC
 	cmp ebx, 1
 		jg error_occured
 
-	NEG ebx
-	cmp ebx, 1
+	NEG eax
+	cmp eax, 1
 		jg error_occured
 
 	jmp end_check
@@ -203,6 +226,11 @@ Rules_CheckAdjacent PROC
 		pop eax
 		ret
 Rules_CheckAdjacent ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckAdjacent subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckTwoAway subroutine
 
 Rules_CheckTwoAway PROC
 	push eax
@@ -241,6 +269,11 @@ Rules_CheckTwoAway PROC
 		ret
 Rules_CheckTwoAway ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckTwoAway subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckSource subroutine
+
 Rules_CheckSource PROC
 	push eax
 	push ebx
@@ -276,6 +309,11 @@ Rules_CheckSource PROC
 		pop eax
 		ret
 Rules_CheckSource ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckSource subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckDirection subroutine
 
 Rules_CheckDirection Proc
 	push eax
@@ -329,6 +367,11 @@ Rules_CheckDirection Proc
 		ret
 Rules_CheckDirection ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckDirection subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckDestination subroutine
+
 Rules_CheckDestination PROC
 	push eax
 	push ebx
@@ -357,6 +400,11 @@ Rules_CheckDestination PROC
 		ret
 Rules_CheckDestination ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckDestination subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckPlayerJumpAvailable subroutine
+
 Rules_CheckPlayerJumpAvailable PROC
 	push eax
 	push ebx
@@ -381,6 +429,11 @@ Rules_CheckPlayerJumpAvailable PROC
 		pop eax
 		ret
 Rules_CheckPlayerJumpAvailable ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckPlayerJumpAvailable subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckSquareJumpAvailable subroutine
 
 Rules_CheckSquareJumpAvailable PROC
 	push eax
@@ -425,6 +478,11 @@ Rules_CheckSquareJumpAvailable PROC
 		ret
 Rules_CheckSquareJumpAvailable ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckSquareJumpAvailable subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckJumpAvailable subroutine
+
 Rules_CheckJumpAvailable PROC
 	push eax
 	push ebx
@@ -465,6 +523,11 @@ Rules_CheckJumpAvailable PROC
 		ret
 Rules_CheckJumpAvailable ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckJumpAvailable subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckJumpAvailableKing subroutine
+
 Rules_CheckJumpAvailableKing PROC
 	push eax
 	push ebx
@@ -494,6 +557,11 @@ Rules_CheckJumpAvailableKing PROC
 		pop eax
 		ret
 Rules_CheckJumpAvailableKing ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckJumpAvailableKing subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckJumpAvailableRegular subroutine
 
 Rules_CheckJumpAvailableRegular PROC
 	push eax
@@ -537,6 +605,12 @@ Rules_CheckJumpAvailableRegular PROC
 		pop eax
 		ret
 Rules_CheckJumpAvailableRegular ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckJumpAvailableRegular subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckUpLeft subroutine
+
 
 Rules_CheckUpLeft PROC
 	push eax
@@ -603,6 +677,11 @@ Rules_CheckUpLeft PROC
 		ret
 Rules_CheckUpLeft ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckUpLeft subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckUpRight subroutine
+
 Rules_CheckUpRight PROC
 	push eax
 	push ebx
@@ -667,6 +746,11 @@ Rules_CheckUpRight PROC
 		pop eax
 		ret
 Rules_CheckUpRight ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckUpRight subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckDownLeft subroutine
 
 Rules_CheckDownLeft PROC
 	push eax
@@ -733,6 +817,11 @@ Rules_CheckDownLeft PROC
 		ret
 Rules_CheckDownLeft ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckDownLeft subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckDownRight subroutine
+
 Rules_CheckDownRight PROC
 	push eax
 	push ebx
@@ -798,6 +887,11 @@ Rules_CheckDownRight PROC
 		ret
 Rules_CheckDownRight ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckDownRight subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckValidJump subroutine
+
 Rules_CheckValidJump PROC
 	push eax
 	push ebx
@@ -856,6 +950,11 @@ Rules_CheckValidJump PROC
 		ret
 Rules_CheckValidJump ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckValidJump subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_RequiredJumpOccurred subroutine
+
 Rules_RequiredJumpOccured PROC
 	push eax
 	push ebx
@@ -876,6 +975,11 @@ Rules_RequiredJumpOccured PROC
 		pop eax
 		ret
 Rules_RequiredJumpOccured ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_RequiredJumpOccurred subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_MovePiece subroutine
 
 Rules_MovePiece PROC
 	push eax
@@ -909,6 +1013,11 @@ Rules_MovePiece PROC
 	pop eax
 	ret
 Rules_MovePiece ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_MovePiece subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_RemoveJump subroutine
 
 Rules_RemoveJump PROC
 	push eax
@@ -1031,6 +1140,11 @@ Rules_RemoveJump PROC
 
 Rules_RemoveJump ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_RemoveJump subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_CheckShouldKing subroutine
+
 Rules_CheckShouldKing PROC
 	push eax
 	push ebx
@@ -1067,29 +1181,43 @@ Rules_CheckShouldKing PROC
 		ret
 Rules_CheckShouldKing ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_CheckShouldKing subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_KingPiece subroutine
+
 Rules_KingPiece PROC
 	push eax
 	push ebx
 
-	mov eax, R1
-	mov ebx, C1
+		mov eax, R2
+		mov ebx, C2
 
-	mov requestedRow, eax
-	mov requestedColumn, ebx
-	call Board_GetRequestedSquare
-	
-	mov eax, [requestedSquare]
-	mov ecx, DWORD PTR [eax]
+		mov requestedRow, eax
+		mov requestedColumn, ebx
 
-	mov ebx, [eax]
-	add ebx, 4
-	mov DWORD PTR [ebx], 2
+		mov eax, [requestedSquare]
+		;add eax, 4
+		mov eax, [eax]
 
-	end_king:
-		pop ebx
-		pop ebx
-		ret
+		mov requestedPiece, eax
+
+		call Pieces_GetRequestedPiece
+
+		mov eax, requestedPieceStatus
+
+		mov DWORD PTR [eax], 2
+
+	pop ebx
+	pop ebx
+	ret
 Rules_KingPiece ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_KingPiece subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_SwapPlayer subroutine
+
 
 Rules_SwapPlayers PROC
 	push eax
@@ -1122,46 +1250,26 @@ Rules_SwapPlayers PROC
 		ret
 Rules_SwapPlayers ENDP
 
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_SwapPlayer subroutine
+
+
+;:;:;:;:;:;:;:;:;:;:;:; Start of Rules_EndIfWon subroutine
+
 Rules_EndIfWon PROC
 	push eax
-	
+
 	call Pieces_GetPieceCounts
 	
 	mov eax, RedPieceCount
+	
 	cmp eax, 0
-		je green_win
+	je end_program
 
 	mov eax, GreenPieceCount
 	cmp eax, 0
-		je red_win
+	je end_program
 
 	jmp return_main
-
-	red_win:
-		Call ClrScr
-
-		mov eax, redPlayerColor
-		call SetTextColor
-		lea edx, RedWinString
-		call WriteString
-		pop edx
-
-		call WaitMsg
-
-		jmp end_program
-
-	green_win:
-		Call ClrScr
-
-		mov eax, greenPlayerColor
-		call SetTextColor
-		lea edx, GreenWinString
-		call WriteString
-		pop edx
-
-		call WaitMsg
-
-		jmp end_program
 	
 	end_program:
 		exit
@@ -1170,3 +1278,7 @@ Rules_EndIfWon PROC
 		pop eax
 		ret
 Rules_EndIfWon ENDP
+
+;:;:;:;:;:;:;:;:;:;:;:; End of Rules_EndIfWon subroutine
+
+
